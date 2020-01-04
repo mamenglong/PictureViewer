@@ -13,9 +13,10 @@ import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
 import net.lucode.hackware.magicindicator.NavigatorHelper;
-import net.lucode.hackware.magicindicator.abs.IPagerNavigator;
 import net.lucode.hackware.magicindicator.buildins.ArgbEvaluatorHolder;
 import net.lucode.hackware.magicindicator.buildins.UIUtil;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,21 +49,21 @@ import java.util.List;
  * 类似CircleIndicator的效果
  */
 
-public class ScaleCircleNavigator extends View implements IPagerNavigator, NavigatorHelper.OnNavigatorScrollListener {
+public class ScaleCircleNavigator<T extends List> extends View implements IPagerNavigator<T>{
     private int mMinRadius;
     private int mMaxRadius;
     private int mNormalCircleColor = Color.LTGRAY;
     private int mSelectedCircleColor = Color.GRAY;
     private int mCircleSpacing;
     private int mCircleCount;
-
+    private T mDataList;
     private Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private List<PointF> mCirclePoints = new ArrayList<PointF>();
     private SparseArray<Float> mCircleRadiusArray = new SparseArray<Float>();
 
     // 事件回调
     private boolean mTouchable;
-    private ScaleCircleNavigator.OnCircleClickListener mCircleClickListener;
+    private OnItemClickListener onItemClickListener;
     private float mDownX;
     private float mDownY;
     private int mTouchSlop;
@@ -142,6 +143,7 @@ public class ScaleCircleNavigator extends View implements IPagerNavigator, Navig
 
     private void prepareCirclePoints() {
         mCirclePoints.clear();
+        mCircleCount= mDataList.size();
         if (mCircleCount > 0) {
             int y = Math.round(getHeight() / 2.0f);
             int centerSpacing = mMinRadius * 2 + mCircleSpacing;
@@ -167,7 +169,7 @@ public class ScaleCircleNavigator extends View implements IPagerNavigator, Navig
                 }
                 break;
             case MotionEvent.ACTION_UP:
-                if (mCircleClickListener != null) {
+                if (onItemClickListener != null) {
                     if (Math.abs(x - mDownX) <= mTouchSlop && Math.abs(y - mDownY) <= mTouchSlop) {
                         float max = Float.MAX_VALUE;
                         int index = 0;
@@ -179,7 +181,7 @@ public class ScaleCircleNavigator extends View implements IPagerNavigator, Navig
                                 index = i;
                             }
                         }
-                        mCircleClickListener.onClick(index);
+                        onItemClickListener.onClick(index);
                     }
                 }
                 break;
@@ -275,12 +277,7 @@ public class ScaleCircleNavigator extends View implements IPagerNavigator, Navig
         mNavigatorHelper.setSkimOver(skimOver);
     }
 
-    public void setCircleClickListener(OnCircleClickListener circleClickListener) {
-        if (!mTouchable) {
-            mTouchable = true;
-        }
-        mCircleClickListener = circleClickListener;
-    }
+
 
     @Override
     public void onEnter(int index, int totalCount, float enterPercent, boolean leftToRight) {
@@ -315,8 +312,17 @@ public class ScaleCircleNavigator extends View implements IPagerNavigator, Navig
             invalidate();
         }
     }
+    @Override
+    public void setDataSet(T list) {
+        this.mDataList = list;
+    }
 
-    public interface OnCircleClickListener {
-        void onClick(int index);
+
+    @Override
+    public void setItemClickListener(@NotNull OnItemClickListener listener) {
+        if (!mTouchable) {
+            mTouchable = true;
+        }
+        onItemClickListener = listener;
     }
 }
