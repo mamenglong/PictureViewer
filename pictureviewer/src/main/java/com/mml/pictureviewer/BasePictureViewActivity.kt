@@ -1,11 +1,11 @@
 package com.mml.pictureviewer
 
+import android.app.SharedElementCallback
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -91,6 +91,17 @@ abstract class BasePictureViewActivity<T> : AppCompatActivity() {
               magic_indicator.visibility= View.GONE
           }
         })
+        //这个可以看做个管道  每次进入和退出的时候都会进行调用  进入的时候获取到前面传来的共享元素的信息
+        //退出的时候 把这些信息传递给前面的activity
+        //同时向sharedElements里面put view,跟对view添加transitionname作用一样
+        setEnterSharedElementCallback(object : SharedElementCallback() {
+            override fun onMapSharedElements(
+                names: List<String>,
+                sharedElements: MutableMap<String, View>) {
+                sharedElements.clear()
+                sharedElements["photoView"] = mViewPager!!.adapter!!.instantiateItem(mViewPager!!,mViewPager!!.currentItem) as View
+            }
+        })
     }
 
     private fun initViewPager() {
@@ -104,11 +115,25 @@ abstract class BasePictureViewActivity<T> : AppCompatActivity() {
                     val view = LayoutInflater.from(container.context)
                         .inflate(getCustomLayoutId(), container, false)
                     view.id = position
+                    if (position==currentPosition.value){
+                        view.transitionName="photoView"
+                    }
+                    val obj=object :ViewTreeObserver.OnPreDrawListener{
+                        override fun onPreDraw(): Boolean {
+                            view.viewTreeObserver.removeOnPreDrawListener(this)
+                            supportStartPostponedEnterTransition()
+                            return true
+                        }
+                    }
+                    view.viewTreeObserver.addOnPreDrawListener(obj)
                     customLayoutConvert(view, mDataList.value!![position], position)
                     container.addView(view)
                     view
                 } else {
                     val photoView = PhotoView(container.context)
+                    if(position==currentPosition.value){
+                        photoView.transitionName="photoView"
+                    }
                     photoView.id = position
                     onPictureShow(photoView, mDataList.value!![position], position)
                     container.addView(photoView)
@@ -168,5 +193,20 @@ abstract class BasePictureViewActivity<T> : AppCompatActivity() {
         })
         magic_indicator.navigator = iPagerNavigator
         //ViewPagerHelper.bind(magic_indicator, mViewPager)
+    }
+
+    override fun supportFinishAfterTransition() {
+        val data = Intent()
+        data.putExtra("position", currentPosition.value)
+        setResult(RESULT_OK, data)
+        super.supportFinishAfterTransition()
+    }
+
+
+    override fun onBackPressed() {
+        val data = Intent()
+        data.putExtra("position", currentPosition.value)
+        setResult(RESULT_OK, data)
+        supportFinishAfterTransition()
     }
 }
