@@ -115,28 +115,22 @@ abstract class BasePictureViewActivity<T> : AppCompatActivity() {
                     val view = LayoutInflater.from(container.context)
                         .inflate(getCustomLayoutId(), container, false)
                     view.id = position
-                    if (position==currentPosition.value){
-                        view.transitionName="photoView"
-                    }
-                    val obj=object :ViewTreeObserver.OnPreDrawListener{
-                        override fun onPreDraw(): Boolean {
-                            view.viewTreeObserver.removeOnPreDrawListener(this)
-                            supportStartPostponedEnterTransition()
-                            return true
-                        }
-                    }
-                    view.viewTreeObserver.addOnPreDrawListener(obj)
                     customLayoutConvert(view, mDataList.value!![position], position)
                     container.addView(view)
+                    if (position==currentPosition.value){
+                        view.transitionName="photoView"
+                        supportStartPostponedEnterTransition()
+                    }
                     view
                 } else {
                     val photoView = PhotoView(container.context)
-                    if(position==currentPosition.value){
-                        photoView.transitionName="photoView"
-                    }
                     photoView.id = position
                     onPictureShow(photoView, mDataList.value!![position], position)
                     container.addView(photoView)
+                    if(position==currentPosition.value){
+                        photoView.transitionName="photoView"
+                        supportStartPostponedEnterTransition()
+                    }
                     photoView
                 }
             }
