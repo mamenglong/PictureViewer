@@ -1,30 +1,32 @@
 package com.mml.pictureviewer
 
 import android.graphics.Color
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.github.chrisbanes.photoview.PhotoView
 import kotlinx.android.synthetic.main.activity_base_picture_view.*
-import net.lucode.hackware.magicindicator.ViewPagerHelper
 
 /**
  * 使用自定义view 重写 [getCustomLayoutId]和[customLayoutConvert]
  * 使用默认view 重写 [onPictureShow]即可
- * 重写[setIPagerNavigator]即可设置自定义的导航器样式
+ * 重写[getIPagerNavigator]即可设置自定义的导航器样式
+ * 支持设置中间页 [currentPosition]
  */
 abstract class BasePictureViewActivity<T> : AppCompatActivity() {
     //live data 数据
     protected val mDataList = MutableLiveData<MutableList<T>>()
     protected var mViewPager: ViewPager? = null
     private var iPagerNavigator:IPagerNavigator<MutableList<T>>? = null
+
+    protected var currentPosition=  MutableLiveData<Int>()
 
     /**
      * 初始化数据类型
@@ -61,22 +63,33 @@ abstract class BasePictureViewActivity<T> : AppCompatActivity() {
     /**
      * 使用自定义的导航器样式
      */
-    open fun setIPagerNavigator():IPagerNavigator<MutableList<T>>{
+    open fun getIPagerNavigator():IPagerNavigator<MutableList<T>>{
         return getScaleCircleNavigator()
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_base_picture_view)
         mDataList.value = mutableListOf()
+        currentPosition.value=0
         initData(mDataList.value)
-        initViewPager()
         initMagicIndicator()
+        initViewPager()
+        currentPosition.observe(this, Observer {
+            tv_indicator.text="${currentPosition.value!!+1}/${mDataList.value!!.size}"
+        })
         mDataList.observe(this, Observer {
             mViewPager?.adapter?.notifyDataSetChanged()
-            magic_indicator.navigator.apply {
-                iPagerNavigator?.setDataSet(mDataList.value!!)
-                notifyDataSetChanged()
-            }
+          if (it.size<10){
+              magic_indicator.visibility= View.VISIBLE
+              magic_indicator.navigator.apply {
+                  iPagerNavigator?.setDataSet(mDataList.value!!)
+                  notifyDataSetChanged()
+              }
+              tv_indicator.visibility = View.VISIBLE
+              mViewPager!!.currentItem=currentPosition.value!!
+          }else {
+              magic_indicator.visibility= View.GONE
+          }
         })
     }
 
@@ -115,6 +128,25 @@ abstract class BasePictureViewActivity<T> : AppCompatActivity() {
                 } else POSITION_NONE
             }
         }
+        mViewPager!!.addOnPageChangeListener(object :ViewPager.OnPageChangeListener{
+            override fun onPageScrollStateChanged(state: Int) {
+                magic_indicator.onPageScrollStateChanged(state)
+            }
+
+            override fun onPageScrolled(
+                position: Int,
+                positionOffset: Float,
+                positionOffsetPixels: Int) {
+                magic_indicator.onPageScrolled(position, positionOffset, positionOffsetPixels)
+
+            }
+
+            override fun onPageSelected(position: Int) {
+                magic_indicator.onPageSelected(position)
+                currentPosition.value=position
+            }
+
+        })
     }
 
     private fun getScaleCircleNavigator(): ScaleCircleNavigator<MutableList<T>> {
@@ -127,7 +159,7 @@ abstract class BasePictureViewActivity<T> : AppCompatActivity() {
         return scaleCircleNavigator
     }
     private fun initMagicIndicator() {
-        iPagerNavigator=setIPagerNavigator()
+        iPagerNavigator=getIPagerNavigator()
         iPagerNavigator?.setDataSet(mDataList.value!!)
         iPagerNavigator?.setItemClickListener(object :OnItemClickListener{
             override fun onClick(index: Int) {
@@ -135,6 +167,6 @@ abstract class BasePictureViewActivity<T> : AppCompatActivity() {
             }
         })
         magic_indicator.navigator = iPagerNavigator
-        ViewPagerHelper.bind(magic_indicator, mViewPager)
+        //ViewPagerHelper.bind(magic_indicator, mViewPager)
     }
 }

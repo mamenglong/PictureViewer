@@ -41,4 +41,6 @@ dependencies {
 
     api 'com.github.chrisbanes:PhotoView:2.0.0'
     api 'com.github.hackware1993:MagicIndicator:1.6.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+
 }

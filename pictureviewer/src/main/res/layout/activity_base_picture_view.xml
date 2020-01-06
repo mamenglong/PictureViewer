@@ -5,17 +5,31 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.mml.pictureviewer.BasePictureViewActivity">
+
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/mViewPager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-    <net.lucode.hackware.magicindicator.MagicIndicator
-        
-        app:layout_constraintBottom_toBottomOf="@+id/mViewPager"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_height="match_parent" />
 
+    <net.lucode.hackware.magicindicator.MagicIndicator
         android:id="@+id/magic_indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        app:layout_constraintBottom_toBottomOf="@+id/mViewPager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_indicator"
         android:layout_width="0dp"
-        android:layout_height="40dp" />
+        android:layout_height="40dp"
+        android:layout_marginTop="100dp"
+        android:gravity="center"
+        android:textColor="#66f"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="1/4"
+        tools:visibility="visible" />
 </androidx.constraintlayout.widget.ConstraintLayout>
