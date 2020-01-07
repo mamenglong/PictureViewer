@@ -6,8 +6,9 @@
     android:layout_height="match_parent"
     tools:context="com.mml.pictureviewer.BasePictureViewActivity">
 
-    <androidx.viewpager.widget.ViewPager
+    <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/mViewPager"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

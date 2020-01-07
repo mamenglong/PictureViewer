@@ -6,11 +6,15 @@ import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.ImageView
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
+import androidx.viewpager2.widget.ViewPager2
 import com.github.chrisbanes.photoview.PhotoView
 import kotlinx.android.synthetic.main.activity_base_picture_view.*
 
@@ -23,9 +27,9 @@ import kotlinx.android.synthetic.main.activity_base_picture_view.*
 abstract class BasePictureViewActivity<T> : AppCompatActivity() {
     //live data 数据
     protected val mDataList = MutableLiveData<MutableList<T>>()
-    protected var mViewPager: ViewPager? = null
+    protected var mViewPager: ViewPager2? = null
     private var iPagerNavigator:IPagerNavigator<MutableList<T>>? = null
-
+    protected var enterPosition=  MutableLiveData<Int>()
     protected var currentPosition=  MutableLiveData<Int>()
 
     /**
@@ -99,55 +103,40 @@ abstract class BasePictureViewActivity<T> : AppCompatActivity() {
                 names: List<String>,
                 sharedElements: MutableMap<String, View>) {
                 sharedElements.clear()
-                sharedElements["photoView"] = mViewPager!!.adapter!!.instantiateItem(mViewPager!!,mViewPager!!.currentItem) as View
+                sharedElements["photoView"] = mViewPager!!.findViewWithTag(currentPosition.value)
             }
         })
     }
 
     private fun initViewPager() {
         mViewPager = findViewById(R.id.mViewPager)
-        mViewPager!!.adapter = object : PagerAdapter() {
-            override fun isViewFromObject(view: View, any: Any): Boolean = view == any
-
-            override fun getCount(): Int = mDataList.value!!.size
-            override fun instantiateItem(container: ViewGroup, position: Int): Any {
+        mViewPager!!.adapter =object : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
                 return if (getCustomLayoutId() != -1) {
-                    val view = LayoutInflater.from(container.context)
-                        .inflate(getCustomLayoutId(), container, false)
-                    view.id = position
-                    customLayoutConvert(view, mDataList.value!![position], position)
-                    container.addView(view)
-                    if (position==currentPosition.value){
-                        view.transitionName="photoView"
-                        supportStartPostponedEnterTransition()
-                    }
-                    view
+                    val view = LayoutInflater.from(parent.context)
+                        .inflate(getCustomLayoutId(), parent, false)
+                  object : RecyclerView.ViewHolder(view) {}
                 } else {
-                    val photoView = PhotoView(container.context)
-                    photoView.id = position
-                    onPictureShow(photoView, mDataList.value!![position], position)
-                    container.addView(photoView)
-                    if(position==currentPosition.value){
-                        photoView.transitionName="photoView"
-                        supportStartPostponedEnterTransition()
-                    }
-                    photoView
+                    val photoView = PhotoView(parent.context)
+                    photoView.layoutParams=LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT)
+                    photoView.scaleType = ImageView.ScaleType.FIT_CENTER
+                    object : RecyclerView.ViewHolder(photoView) {}
                 }
             }
 
-            override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
-                container.removeView(`object` as View)
-            }
+            override fun getItemCount(): Int = mDataList.value!!.size
 
-            override fun getItemPosition(any: Any): Int {
-                val view = any as View
-                val index: Int = view.id
-                return if (index >= 0) {
-                    index
-                } else POSITION_NONE
+            override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+                customLayoutConvert(holder.itemView,mDataList.value!![position],position)
+                if (position==currentPosition.value){
+                    holder.itemView.transitionName="photoView"
+                    supportStartPostponedEnterTransition()
+                }else{
+                    holder.itemView.transitionName= null
+                }
             }
         }
-        mViewPager!!.addOnPageChangeListener(object :ViewPager.OnPageChangeListener{
+        mViewPager!!.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageScrollStateChanged(state: Int) {
                 magic_indicator.onPageScrollStateChanged(state)
             }
@@ -161,6 +150,7 @@ abstract class BasePictureViewActivity<T> : AppCompatActivity() {
             }
 
             override fun onPageSelected(position: Int) {
+                mViewPager!!.tag = position
                 magic_indicator.onPageSelected(position)
                 currentPosition.value=position
             }
@@ -191,7 +181,7 @@ abstract class BasePictureViewActivity<T> : AppCompatActivity() {
 
     override fun supportFinishAfterTransition() {
         val data = Intent()
-        data.putExtra("position", currentPosition.value)
+        data.putExtra("position", enterPosition.value)
         setResult(RESULT_OK, data)
         super.supportFinishAfterTransition()
     }
@@ -199,8 +189,8 @@ abstract class BasePictureViewActivity<T> : AppCompatActivity() {
 
     override fun onBackPressed() {
         val data = Intent()
-        data.putExtra("position", currentPosition.value)
+        data.putExtra("position", enterPosition.value)
         setResult(RESULT_OK, data)
-        supportFinishAfterTransition()
+        super.supportFinishAfterTransition()
     }
 }
