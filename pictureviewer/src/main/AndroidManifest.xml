@@ -1,2 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.mml.pictureviewer" />
+    package="com.mml.pictureviewer">
+
+    <application>
+        <activity
+             android:theme="@style/picture_set_view"
+            android:name=".BasePictureViewActivity"></activity>
+    </application>
+
+</manifest>

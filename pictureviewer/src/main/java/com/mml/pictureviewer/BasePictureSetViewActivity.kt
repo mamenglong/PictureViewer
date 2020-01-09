@@ -2,7 +2,6 @@ package com.mml.pictureviewer
 
 import android.content.Intent
 import android.graphics.Color
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,20 +9,30 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.github.chrisbanes.photoview.PhotoView
-import kotlinx.android.synthetic.main.activity_base_picture_view.*
+import kotlinx.android.synthetic.main.activity_base_picture_set_view.*
 
-abstract class BasePictureViewActivity<T>  : AppCompatActivity() {
+
+/**
+ * 此采用共享元素,使用请时请注意
+ * 使用自定义view 重写 [getCustomLayoutId]和[customLayoutConvert]
+ * 使用默认view 重写 [onPictureShow]即可
+ * 重写[getIPagerNavigator]即可设置自定义的导航器样式
+ *
+ * 支持设置中间页 [currentPosition]
+ */
+abstract class BasePictureSetViewActivity<T> : AppCompatActivity() {
     //live data 数据
     protected val mDataList = MutableLiveData<MutableList<T>>()
     protected lateinit var mViewPager: ViewPager2
     private var iPagerNavigator:IPagerNavigator<MutableList<T>>? = null
+    protected var enterPosition=  MutableLiveData<Int>()
     protected var currentPosition=  MutableLiveData<Int>()
-
     fun log(msg:String){
         Log.i("BasePictureSetView",msg)
     }
@@ -67,7 +76,7 @@ abstract class BasePictureViewActivity<T>  : AppCompatActivity() {
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_base_picture_view)
+        setContentView(R.layout.activity_base_picture_set_view)
         supportPostponeEnterTransition() //延缓执行
         mDataList.value = mutableListOf()
         currentPosition.value=0
@@ -79,17 +88,17 @@ abstract class BasePictureViewActivity<T>  : AppCompatActivity() {
         })
         mDataList.observe(this, Observer {
             mViewPager.adapter?.notifyDataSetChanged()
-            if (it.size<10){
-                magic_indicator.visibility= View.VISIBLE
-                magic_indicator.navigator.apply {
-                    iPagerNavigator?.setDataSet(mDataList.value!!)
-                    notifyDataSetChanged()
-                }
-                tv_indicator.visibility = View.VISIBLE
-                mViewPager.currentItem=currentPosition.value!!
-            }else {
-                magic_indicator.visibility= View.GONE
-            }
+          if (it.size<10){
+              magic_indicator.visibility= View.VISIBLE
+              magic_indicator.navigator.apply {
+                  iPagerNavigator?.setDataSet(mDataList.value!!)
+                  notifyDataSetChanged()
+              }
+              tv_indicator.visibility = View.VISIBLE
+              mViewPager.currentItem=currentPosition.value!!
+          }else {
+              magic_indicator.visibility= View.GONE
+          }
         })
     }
 
@@ -100,10 +109,10 @@ abstract class BasePictureViewActivity<T>  : AppCompatActivity() {
                 return if (getCustomLayoutId() != -1) {
                     val view = LayoutInflater.from(parent.context)
                         .inflate(getCustomLayoutId(), parent, false)
-                    object : RecyclerView.ViewHolder(view) {}
+                  object : RecyclerView.ViewHolder(view) {}
                 } else {
                     val photoView = PhotoView(parent.context)
-                    photoView.layoutParams= LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT)
+                    photoView.layoutParams=LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT)
                     photoView.scaleType = ImageView.ScaleType.FIT_CENTER
                     object : RecyclerView.ViewHolder(photoView) {}
                 }
@@ -124,7 +133,7 @@ abstract class BasePictureViewActivity<T>  : AppCompatActivity() {
                 customLayoutConvert(holder.itemView,mDataList.value!![position],position)
                 if (position==currentPosition.value){
                     if (getCustomLayoutId()==-1)
-                        holder.itemView.transitionName="photoView-${currentPosition.value}"
+                        holder.itemView.transitionName="photoView-${enterPosition.value}"
                 }else{
                     if (getCustomLayoutId()==-1)
                         holder.itemView.transitionName=null
@@ -155,7 +164,7 @@ abstract class BasePictureViewActivity<T>  : AppCompatActivity() {
     }
 
     private fun getScaleCircleNavigator(): ScaleCircleNavigator<MutableList<T>> {
-        log( "getScaleCircleNavigator")
+        Log.d("BasePicture","getScaleCircleNavigator")
         val scaleCircleNavigator =
             ScaleCircleNavigator<MutableList<T>>(this)
         scaleCircleNavigator.setCircleCount(mDataList.value!!.size)
@@ -177,7 +186,7 @@ abstract class BasePictureViewActivity<T>  : AppCompatActivity() {
 
     override fun supportFinishAfterTransition() {
         val data = Intent()
-        data.putExtra("position", currentPosition.value)
+        data.putExtra("position", enterPosition.value)
         setResult(RESULT_OK, data)
         super.supportFinishAfterTransition()
     }
@@ -185,7 +194,7 @@ abstract class BasePictureViewActivity<T>  : AppCompatActivity() {
 
     override fun onBackPressed() {
         val data = Intent()
-        data.putExtra("position", currentPosition.value)
+        data.putExtra("position", enterPosition.value)
         setResult(RESULT_OK, data)
         super.supportFinishAfterTransition()
     }
