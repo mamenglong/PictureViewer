@@ -46,7 +46,7 @@ abstract class BasePictureViewActivity: AppCompatActivity() {
     }
 
     /**
-     * 默认布局的点击事件
+     * 默认布局的点击事件,或者调用 [getOnPictureShow]依据 参数自己实现点击事件,同时注意共享元素的执行
      */
     open fun getOnClickListener( ): ((View)->Unit)?{
         return null

@@ -25,9 +25,8 @@ class PictureViewActivity : com.mml.pictureviewer.BasePictureViewActivity() {
 
     override fun getOnPictureShow():((photoView: PhotoView, data: Any, position: Int)->Unit)?  {
        return { photoView, data, position ->
-
-
-        }
+            photoView.setImageResource(viewModel.mDataList.value!![position] as Int)
+       }
     }
 
 }
