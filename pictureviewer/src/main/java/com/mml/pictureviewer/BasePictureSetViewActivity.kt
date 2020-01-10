@@ -39,7 +39,7 @@ abstract class BasePictureSetViewActivity<T> : AppCompatActivity() {
     /**
      * 初始化数据类型
      */
-    abstract fun initData(data: MutableList<T>?)
+    abstract fun initData(data: MutableLiveData<MutableList<T>>)
 
     /**
      * 使用自己的图片加载框架,用户自己决定采用什么方式显示
@@ -80,7 +80,7 @@ abstract class BasePictureSetViewActivity<T> : AppCompatActivity() {
         supportPostponeEnterTransition() //延缓执行
         mDataList.value = mutableListOf()
         currentPosition.value=0
-        initData(mDataList.value)
+        initData(mDataList)
         initMagicIndicator()
         initViewPager()
         currentPosition.observe(this, Observer {
@@ -97,6 +97,8 @@ abstract class BasePictureSetViewActivity<T> : AppCompatActivity() {
               tv_indicator.visibility = View.VISIBLE
               mViewPager.currentItem=currentPosition.value!!
           }else {
+              tv_indicator.visibility = View.VISIBLE
+
               magic_indicator.visibility= View.GONE
           }
         })

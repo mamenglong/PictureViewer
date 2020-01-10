@@ -10,7 +10,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name="com.mml.pictureviewer.BasePictureViewActivity"></activity>
-        <activity android:name=".PictureViewActivity" />
+        <activity
+             android:theme="@style/picture_set_view"
+            android:name=".PictureViewActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -1,21 +1,33 @@
 package com.mml.pictureview
 
+import androidx.lifecycle.MutableLiveData
 import com.github.chrisbanes.photoview.PhotoView
 
 
-class PictureViewActivity : com.mml.pictureviewer.BasePictureViewActivity<String>() {
-    override fun onPictureShow(
-        photoView: PhotoView,
-        position: String,
-        position1: Int
-    ) {
+class PictureViewActivity : com.mml.pictureviewer.BasePictureViewActivity() {
+    val list = mutableListOf<Any>().apply {
+        add(R.drawable.a)
+        add(R.drawable.b)
+        add(R.drawable.c)
+        add(R.drawable.b)
+        add(R.drawable.a)
+
+    }
+    override fun initData( mDataList: MutableLiveData<MutableList<Any>>) {
+        intent?.let {
+          val po=  it.getIntExtra("position",0)
+            log("position:$po")
+            viewModel.currentPosition.value=po
+        }
+        mDataList.value= list
 
     }
 
-    override fun initData(data: MutableList<String>) {
-        ('a'..'z').forEach {
-            data.add(it.toString())
+    override fun getOnPictureShow():((photoView: PhotoView, data: Any, position: Int)->Unit)?  {
+       return { photoView, data, position ->
+
+
         }
-    }                   
+    }
 
 }
