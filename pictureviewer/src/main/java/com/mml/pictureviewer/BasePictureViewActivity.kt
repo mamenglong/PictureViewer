@@ -22,6 +22,7 @@ import kotlinx.android.synthetic.main.activity_base_picture_view.*
  * 默认布局 重写 [getOnClickListener] [getOnLongClickListener] [getOnPictureShow]
  */
 abstract class BasePictureViewActivity: AppCompatActivity() {
+    var prefixTransitionName:String= "photoView"
     protected lateinit var viewModel: BasePictureViewViewModel
     //live data 数据
     protected lateinit var mViewPager: ViewPager2
@@ -119,10 +120,11 @@ abstract class BasePictureViewActivity: AppCompatActivity() {
                 names: List<String>,
                 sharedElements: MutableMap<String, View>
             ) {
-                sharedElements.clear()
+                //todo 可以不需要  只要保证前后设置 TransitionName 一致
+               /* sharedElements.clear()
                 viewModel.currentPhotoView?.let {
-                    sharedElements["photoView-${viewModel.currentPosition.value}"] =  it
-                }
+                    sharedElements["$prefixTransitionName-${viewModel.currentPosition.value}"] =  it
+                }*/
             }
         })
     }

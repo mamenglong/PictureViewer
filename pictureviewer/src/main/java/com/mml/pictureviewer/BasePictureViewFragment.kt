@@ -49,7 +49,9 @@ class BasePictureViewFragment : Fragment() {
             Log.i("Fragment", "default view ")
             rootView = inflater.inflate(R.layout.fragment_base_picture_view, container, false)
             rootView.photoView.transitionName = "photoView-${position}"
+            Log.i("Fragment", "default view transitionName:${rootView.photoView.transitionName} ")
             viewModel.onPictureShow?.invoke(rootView.photoView,viewModel.mDataList.value!![position],position)
+            Log.i("Fragment", "default view transitionName:${rootView.photoView.transitionName} ")
             Log.i(
                 "Fragment",
                 "position:${position} viewModel.currentPosition.value:${viewModel.currentPosition.value} view.photoView.transitionName :${rootView.photoView.transitionName}"
