@@ -28,6 +28,7 @@ import kotlinx.android.synthetic.main.activity_base_picture_set_view.*
  */
 abstract class BasePictureSetViewActivity<T> : AppCompatActivity() {
     //live data 数据
+    var prefixTransitionName:String= "photoView"
     protected val mDataList = MutableLiveData<MutableList<T>>()
     protected lateinit var mViewPager: ViewPager2
     private var iPagerNavigator:IPagerNavigator<MutableList<T>>? = null
@@ -135,7 +136,7 @@ abstract class BasePictureSetViewActivity<T> : AppCompatActivity() {
                 customLayoutConvert(holder.itemView,mDataList.value!![position],position)
                 if (position==currentPosition.value){
                     if (getCustomLayoutId()==-1)
-                        holder.itemView.transitionName="photoView-${enterPosition.value}"
+                        holder.itemView.transitionName="$prefixTransitionName-${enterPosition.value}"
                 }else{
                     if (getCustomLayoutId()==-1)
                         holder.itemView.transitionName=null
