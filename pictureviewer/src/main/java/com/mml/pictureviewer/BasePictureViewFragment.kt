@@ -3,16 +3,14 @@ package com.mml.pictureviewer
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
-import androidx.lifecycle.ViewModel
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.github.chrisbanes.photoview.PhotoView
 import kotlinx.android.synthetic.main.fragment_base_picture_view.view.*
-import java.text.ParsePosition
 
 
 /**
@@ -62,7 +60,7 @@ class BasePictureViewFragment : Fragment() {
                     "OnClickListener-> position:${position} setOnClickListener viewModel.currentPosition.value:${viewModel.currentPosition.value} view.photoView.transitionName :${rootView.photoView.transitionName}"
                 )
                 viewModel.currentPhotoView = it as PhotoView
-                viewModel.onClickListener?.invoke(it)
+                viewModel.onClickListener?.invoke(it,viewModel.mDataList.value!![position],position)
                 activity?.supportFinishAfterTransition()
             }
             rootView.photoView.setOnLongClickListener {
@@ -70,7 +68,7 @@ class BasePictureViewFragment : Fragment() {
                     "Fragment",
                     "OnLongClickListener-> position:${position} setOnClickListener viewModel.currentPosition.value:${viewModel.currentPosition.value} view.photoView.transitionName :${rootView.photoView.transitionName}"
                 )
-                viewModel.onLongClickListener?.invoke(it)
+                viewModel.onLongClickListener?.invoke(it,viewModel.mDataList.value!![position],position)
                 return@setOnLongClickListener true
             }
             rootView.photoView.viewTreeObserver.addOnPreDrawListener(object :

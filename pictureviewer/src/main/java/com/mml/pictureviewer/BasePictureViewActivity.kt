@@ -49,13 +49,13 @@ abstract class BasePictureViewActivity: AppCompatActivity() {
     /**
      * 默认布局的点击事件,或者调用 [getOnPictureShow]依据 参数自己实现点击事件,同时注意共享元素的执行
      */
-    open fun getOnClickListener( ): ((View)->Unit)?{
+    open fun getOnClickListener( ): ((view: View, data: Any, position: Int)->Unit)?{
         return null
     }
     /**
      * 默认布局的长点击事件
      */
-    open fun getOnLongClickListener( ): ((View)->Unit)? {
+    open fun getOnLongClickListener( ): ((View,Any,Int)->Unit)? {
         return null
     }
     /**

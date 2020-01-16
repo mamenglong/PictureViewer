@@ -24,8 +24,8 @@ class BasePictureViewViewModel: ViewModel(), LifecycleObserver {
     var magicIndicatorSelectColor:  Int =Color.DKGRAY
 
     var onPictureShow:((photoView: PhotoView, data: Any, position: Int)->Unit)?=null
-    var onClickListener:((View)->Unit)?= null
-    var onLongClickListener:((View)->Unit)?= null
+    var onClickListener:((view: View, data: Any, position: Int)->Unit)?= null
+    var onLongClickListener:((view: View, data: Any, position: Int)->Unit)?= null
     var customLayoutId :Int =-1
     var customLayoutConvert:((view: View, data: Any, position: Int)->Unit)? =null
 }
