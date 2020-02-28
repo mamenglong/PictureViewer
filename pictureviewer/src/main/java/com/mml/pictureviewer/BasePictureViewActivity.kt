@@ -120,11 +120,10 @@ abstract class BasePictureViewActivity: AppCompatActivity() {
                 names: List<String>,
                 sharedElements: MutableMap<String, View>
             ) {
-                //todo 可以不需要  只要保证前后设置 TransitionName 一致
-               /* sharedElements.clear()
+                sharedElements.clear()
                 viewModel.currentPhotoView?.let {
                     sharedElements["$prefixTransitionName-${viewModel.currentPosition.value}"] =  it
-                }*/
+                }
             }
         })
     }

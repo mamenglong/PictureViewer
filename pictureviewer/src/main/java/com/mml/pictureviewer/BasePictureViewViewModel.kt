@@ -23,6 +23,9 @@ class BasePictureViewViewModel: ViewModel(), LifecycleObserver {
     var magicIndicatorNormalColor:  Int= Color.LTGRAY
     var magicIndicatorSelectColor:  Int =Color.DKGRAY
 
+    /**
+     * 请记得设置 transitionName
+     */
     var onPictureShow:((photoView: PhotoView, data: Any, position: Int)->Unit)?=null
     var onClickListener:((view: View, data: Any, position: Int)->Unit)?= null
     var onLongClickListener:((view: View, data: Any, position: Int)->Unit)?= null
