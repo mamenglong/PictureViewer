@@ -27,6 +27,9 @@ class MainActivity : AppCompatActivity() {
         add(R.drawable.c)
         add(R.drawable.b)
         add(R.drawable.a)
+        add(R.drawable.c)
+        add(R.drawable.b)
+        add(R.drawable.a)
  
     }
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -11,7 +11,9 @@ class PictureViewActivity : com.mml.pictureviewer.BasePictureViewActivity() {
         add(R.drawable.c)
         add(R.drawable.b)
         add(R.drawable.a)
-
+        add(R.drawable.c)
+        add(R.drawable.b)
+        add(R.drawable.a)
     }
     override fun initData( mDataList: MutableLiveData<MutableList<Any>>) {
         intent?.let {
