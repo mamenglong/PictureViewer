@@ -27,7 +27,7 @@ class BasePictureViewFragment : Fragment() {
         arguments?.let {
             position = it.getInt(ARG_PARAM_POSITION)
         }
-       viewModel=  ViewModelProvider(activity!!).get(BasePictureViewViewModel::class.java)
+       viewModel=  ViewModelProvider(requireActivity()).get(BasePictureViewViewModel::class.java)
         lifecycle.addObserver(viewModel)
     }
 
@@ -61,7 +61,11 @@ class BasePictureViewFragment : Fragment() {
                 )
                 viewModel.currentPhotoView = it as PhotoView
                 viewModel.onClickListener?.invoke(it,viewModel.mDataList.value!![position],position)
-                activity?.supportFinishAfterTransition()
+               if (viewModel.currentPosition.value==viewModel.enterPosition.value){
+                   requireActivity().supportFinishAfterTransition()
+               } else {
+                   requireActivity().finish()
+               }
             }
             rootView.photoView.setOnLongClickListener {
                 Log.i(
@@ -76,7 +80,7 @@ class BasePictureViewFragment : Fragment() {
                 override fun onPreDraw(): Boolean {
                     viewModel.currentPhotoView = rootView.photoView
                     rootView.photoView.viewTreeObserver.removeOnPreDrawListener(this)
-                    activity?.supportStartPostponedEnterTransition()
+                    requireActivity().supportStartPostponedEnterTransition()
                     return true
                 }
             })

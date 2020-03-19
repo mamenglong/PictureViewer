@@ -19,6 +19,11 @@ import com.github.chrisbanes.photoview.PhotoView
 class BasePictureViewViewModel: ViewModel(), LifecycleObserver {
     val mDataList = MutableLiveData<MutableList<Any>>()  // = viewModel.dataSet
     var currentPosition=  MutableLiveData<Int>()
+
+    /**
+     * 进入时位置
+     */
+    var enterPosition=  MutableLiveData<Int>()
     var currentPhotoView: PhotoView?= null
     var magicIndicatorNormalColor:  Int= Color.LTGRAY
     var magicIndicatorSelectColor:  Int =Color.DKGRAY

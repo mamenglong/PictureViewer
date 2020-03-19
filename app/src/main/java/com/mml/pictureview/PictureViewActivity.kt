@@ -20,6 +20,7 @@ class PictureViewActivity : com.mml.pictureviewer.BasePictureViewActivity() {
           val po=  it.getIntExtra("position",0)
             log("position:$po")
             viewModel.currentPosition.value=po
+            viewModel.enterPosition.value=po
         }
         mDataList.value= list
 

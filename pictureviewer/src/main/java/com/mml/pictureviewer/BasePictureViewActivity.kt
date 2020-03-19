@@ -82,7 +82,7 @@ abstract class BasePictureViewActivity: AppCompatActivity() {
         initData(viewModel.mDataList)
         initMagicIndicator()
         initViewPager()
-        initShareElement()
+        //initShareElement()
     }
     private fun initViewModelData(){
         viewModel.mDataList.value = mutableListOf()
@@ -200,7 +200,19 @@ abstract class BasePictureViewActivity: AppCompatActivity() {
         val data = Intent()
         data.putExtra("position", viewModel.currentPosition.value)
         setResult(RESULT_OK, data)
-        super.supportFinishAfterTransition()
+        if (viewModel.currentPosition.value==viewModel.enterPosition.value){
+            supportFinishAfterTransition()
+        } else {
+            supportFinishAfterTransition()
+        }
+    }
+
+    override fun finish() {
+        super.finish()
+        val data = Intent()
+        data.putExtra("position", viewModel.currentPosition.value)
+        setResult(RESULT_OK, data)
+        overridePendingTransition(0, R.anim.activity_exit)
     }
 }
 

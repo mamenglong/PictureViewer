@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         initRecyclerView()
-        setExitSharedElementCallback(object : SharedElementCallback() {
+      /*  setExitSharedElementCallback(object : SharedElementCallback() {
             override fun onMapSharedElements(
                 names: MutableList<String>?,
                 sharedElements: MutableMap<String, View>?
@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
                         shareElementsBundle=null
                     }
             }
-        })
+        })*/
     }
     private fun initRecyclerView(){
         recyclerView.apply {
